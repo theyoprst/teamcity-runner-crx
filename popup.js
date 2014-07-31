@@ -1,41 +1,70 @@
+function AgentsStorage() {
+  var agents = localStorage.getItem('agents');
+  if (agents) {
+    agents = JSON.parse(agents);
+  } else {
+    agents = {};
+  }
+  this.agents_ = agents;
+}
+
+AgentsStorage.prototype = {
+  requestSuggestions: function(needle, callback) {
+    var suggestions = Object.keys(this.agents_).filter(function(agent) {
+      return needle.length > 0 && agent.indexOf(needle) === 0;
+    });
+    callback(suggestions.sort());
+  },
+
+  addAgent: function(agentName, agentId) {
+    this.agents_[agentName] = agentId;
+    this.store_();
+  },
+
+  getAgentIdByName: function(agentName) {
+    return this.agents_[agentName];
+  },
+
+  store_: function() {
+    localStorage.setItem('agents', JSON.stringify(this.agents_));
+  }
+};
+
+function BranchesStorage() {
+  var branches = localStorage.getItem('branches');
+  if (branches) {
+    branches = JSON.parse(branches);
+  } else {
+    branches = {};
+  }
+  this.branches_ = branches;
+}
+
+BranchesStorage.prototype = {
+  requestSuggestions: function(needle, callback) {
+    var suggestions = Object.keys(this.branches_).filter(function(branch) {
+      return needle.length > 0 && branch.indexOf(needle) === 0;
+    });
+    callback(suggestions.sort());
+  },
+
+  addBranch: function(branchName) {
+    this.branches_[branchName] = true;
+    this.store_();
+  },
+
+  store_: function() {
+    localStorage.setItem('branches', JSON.stringify(this.branches_));
+  }
+};
+
 (function() {
   'use strict';
 
   var buildType;
   var teamcityOrigin;
-  var agents;
-
-  function Agents() {
-    var agents = localStorage.getItem('agents');
-    if (agents) {
-      agents = JSON.parse(agents);
-    } else {
-      agents = {};
-    }
-    this.agents_ = agents;
-  }
-
-  Agents.prototype.requestSuggestions = function(
-      textboxValue, callback) {
-    var suggestions = Object.keys(this.agents_).filter(function(agent) {
-      return textboxValue.length > 0 && agent.indexOf(textboxValue) === 0;
-    });
-    callback(suggestions.sort());
-  };
-
-  Agents.prototype.addAgent = function(agentName, agentId) {
-    this.agents_[agentName] = agentId;
-    this.store_();
-  };
-
-  Agents.prototype.getAgentIdByName = function(agentName) {
-    return this.agents_[agentName];
-  };
-
-  Agents.prototype.store_ = function() {
-    localStorage.setItem('agents', JSON.stringify(this.agents_));
-  };
-
+  var agents = new AgentsStorage();
+  var branches = new BranchesStorage();
 
   function getJsonFromQuery(query) {
     var result = {};
@@ -155,6 +184,10 @@
         var rootElement = request.responseXML.documentElement;
         var webUrl = rootElement.getAttribute('webUrl');
         chrome.tabs.create({ url: webUrl });
+        var branchName = document.getElementById('build_branch').value;
+        if (branchName) {
+          branches.addBranch(branchName);
+        }
       }
     });
     request.open('POST', url, true);
@@ -216,11 +249,12 @@
       teamcityOrigin = getOriginUrl(currentUrl);
     });
     var agentElem = document.getElementById('build_agent');
-    agents = new Agents();
     new AutoSuggestControl(agentElem, agents);
     agentElem.addEventListener('change', function() {
       document.getElementById('invalidAgent').style.display = 'none';
     }, false);
+    var branchElem = document.getElementById('build_branch');
+    new AutoSuggestControl(branchElem, branches);
     document.getElementById('runBuildForm').addEventListener(
         'submit', onSubmit);
   });

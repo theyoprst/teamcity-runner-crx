@@ -1,0 +1,112 @@
+<!doctype html>
+<html>
+  <head>
+    <style>
+      body {
+        min-width: 320px;
+        font: 82%/1.5em "Helvetica Neue", Arial, sans-serif;
+        color: #151515;
+        text-rendering: optimizeLegibility;
+        padding: 0;
+        margin: 0;
+      }
+      h1 {
+        height: 18px;
+        margin: 0;
+        font: 200 16px "Helvetica Neue", Calibri, Arial, sans-serif;
+        background-color: #F6F6F6;
+        padding: 12px;
+        border-bottom: 1px solid #EEE;
+      }
+      .contents {
+        padding: 10px;
+      }
+      td.label {
+        white-space: nowrap;
+        width: 8em;
+      }
+      .buttons {
+        height: 32px;
+        padding-top: 10px;
+        border-top: 1px dotted #CCC;
+      }
+      .parameters {
+        padding-bottom: 10px;
+      }
+      .parameters input[type="text"] {
+        width: 200px;
+      }
+      .error {
+        margin-top: 0;
+        display: none;
+        color: #ed2c10;
+        width: 100%;
+      }
+
+    </style>
+    <link href="teamcity.css" rel="stylesheet" type="text/css" />
+    <link href="autosuggest.css" rel="stylesheet" type="text/css" />
+
+    <!--
+      - JavaScript and HTML must be in separate files: see our Content Security
+      - Policy documentation[1] for details and explanation.
+      -
+      - [1]: http://developer.chrome.com/extensions/contentSecurityPolicy.html
+     -->
+    <script src="autosuggest.js"></script>
+    <script src="popup.js"></script>
+  </head>
+  <body>
+    <h1>Run, Custom Build, Run</h1>
+    <form id='runBuildForm' action='#' class='contents'>
+      <table class='parameters'>
+        <tr>
+          <td class='label'>Branch:</td>
+          <td class='input'><input type='text' value='' name='build_branch'
+                 placeholder='<default branch>' id='build_branch'/></td>
+        </tr>
+        <tr>
+          <td class='label'>Comment:</td>
+          <td class='input'><input type='text' value='' name='build_comment'/></td>
+        </tr>
+        <tr>
+          <td class='label'>Agent:</td>
+          <td class='input'>
+            <input type='text' value='' name='build_agent' id='build_agent'/>
+            <div class='error' id='invalidAgent'>
+              Invalid agent name
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td class='checkbox'>
+            <input type='checkbox' name='build_is_personal' id='build_is_personal'/>
+            <label for='build_is_personal'>personal</label>
+          </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td class='checkbox'>
+            <input type='checkbox' name='build_move_to_top' id='build_move_to_top'/>
+            <label for='build_move_to_top'>move to top</label>
+          </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td class='checkbox'>
+            <input type='checkbox' name='build_clean_all' id='build_clean_all'/>
+            <label for='build_clean_all'>clean all files</label>
+          </td>
+        </tr>
+      </table>
+      <div class='buttons'>
+        <input type='submit' value='Run Build' class='btn btn_primary' />
+        <i id="runBuildProgress" style="display: none;"
+           class="icon-refresh icon-spin progressRing progressRingDefault icon-2x"
+           title="Please wait..."></i>
+      </div>
+    </form>
+  </body>
+</html>
+

@@ -75,20 +75,6 @@ BranchesStorage.prototype = {
     return result;
   }
 
-  function getBuildTypeFromUrl(url) {
-    var splittedUrl = url.split('?', 2);
-    var queryString = splittedUrl[1];
-    var queryParams = getJsonFromQuery(queryString);
-    if (queryParams.hasOwnProperty('buildTypeId')) {
-      return queryParams.buildTypeId;
-    } else {
-      var buildType = queryParams.id;
-      var prefix = 'buildType:';
-      console.assert(buildType.indexOf(prefix) === 0);
-      return buildType.substring(prefix.length);
-    }
-  }
-
   // Returns protocol + host + optional port.
   // Given uri = "http://www.google.com/", origin == "http://www.google.com"
   function getOriginUrl(uri) {
@@ -188,6 +174,8 @@ BranchesStorage.prototype = {
         if (branchName) {
           branches.addBranch(branchName);
         }
+      } else {
+        console.log(request);
       }
     });
     request.open('POST', url, true);
@@ -244,9 +232,19 @@ BranchesStorage.prototype = {
       active: true,
       lastFocusedWindow: true
     }, function(tabs) {
-      var currentUrl = tabs[0].url;
-      buildType = getBuildTypeFromUrl(currentUrl);
+      var tab = tabs[0];
+      var currentUrl = tab.url;
       teamcityOrigin = getOriginUrl(currentUrl);
+      chrome.tabs.executeScript(
+          tab.id, {file: 'buildtypes.js'},
+          function(results) {
+            console.assert(results.length == 1);
+            var buildTypes = results[0];
+            console.assert(buildTypes.length == 1);
+            buildType = buildTypes[0];
+            console.assert(buildType.length > 0);
+          }
+      );
     });
     var agentElem = document.getElementById('build_agent');
     new AutoSuggestControl(agentElem, agents);

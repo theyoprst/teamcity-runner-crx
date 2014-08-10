@@ -42,6 +42,11 @@
         color: #ed2c10;
         width: 100%;
       }
+      .expand {
+        border-bottom: 1px dotted #000;
+        text-decoration: none;
+        cursor: pointer;
+      }
 
     </style>
     <link href="teamcity.css" rel="stylesheet" type="text/css" />
@@ -59,7 +64,7 @@
   <body>
     <h1>Run, Custom Build, Run</h1>
     <form id='runBuildForm' action='#' class='contents'>
-      <table class='parameters'>
+      <table class='parameters' id='parameters'>
         <tr>
           <td class='label'>Branch:</td>
           <td class='input'><input type='text' value='' name='build_branch'
@@ -76,6 +81,17 @@
             <div class='error' id='invalidAgent'>
               Invalid agent name
             </div>
+          </td>
+        </tr>
+        <tr id='expand-params-row'>
+          <td class='label'>
+            <span href='#' class='expand' id='expand-params'>
+              Parameters:
+            </span></td>
+          <td>
+            <i id="expand-params-progress" style="display: none;"
+               class="icon-refresh icon-spin progressRing progressRingDefault"
+               title="Please wait..."></i>
           </td>
         </tr>
         <tr>

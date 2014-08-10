@@ -58,6 +58,235 @@ BranchesStorage.prototype = {
   }
 };
 
+function TeamcityPropertyFactory(propertyElement) {
+  var type = 'text';
+  var typeValueElement;
+  if (propertyElement.children.length > 0) {
+    console.assert(propertyElement.children.length == 1);
+    var typeElement = propertyElement.children[0];
+    var rawValue = typeElement.getAttribute('rawValue');
+    // "type attr1='value 1' attr2='value 2' ... "
+    var xml = '<' + rawValue.replace('<', '&lt;').replace('>', '&gt;') + '/>';
+    xml = xml.replace(/\|(.)/g, function(match, p1){
+      return '&#' + p1.charCodeAt(0) + ';';
+    });
+    console.log('xml = ' + xml);
+    var parser = new DOMParser();
+    typeValueElement = parser.parseFromString(xml, 'text/xml').documentElement;
+    type = typeValueElement.tagName;
+  }
+  var teamcityPropertyClass = TeamcityProperty;
+  if (type == 'text')
+    teamcityPropertyClass = TeamcityTextProperty;
+  else if (type == 'checkbox')
+    teamcityPropertyClass = TeamcityCheckboxProperty;
+  else if (type == 'select')
+    teamcityPropertyClass = TeamcitySelectProperty;
+  else if (type == 'password')
+    teamcityPropertyClass = TeamcityPasswordProperty;
+  else
+    console.assert(false, 'Invalid type "' + type + '"');
+  return new teamcityPropertyClass(propertyElement, typeValueElement);
+}
+
+function TeamcityProperty(propertyElement, typeValueElement) {
+  this.name = propertyElement.getAttribute('name');
+  this.value = propertyElement.getAttribute('value');
+  if (typeValueElement) {
+    this.description = typeValueElement.getAttribute('description');
+    this.display = typeValueElement.getAttribute('display');
+    this.label = typeValueElement.getAttribute('label');
+  }
+}
+
+TeamcityProperty.prototype = {
+  populateRow: function(row) {
+    var cell0 = row.insertCell(0);
+    var cell1 = row.insertCell(1);
+    cell0.innerHTML = this.label || this.name;
+    this.createInput(cell1);
+  }
+};
+
+function TeamcityTextProperty(propertyElement, typeValueElement) {
+  TeamcityProperty.call(this, propertyElement, typeValueElement);
+  if (typeValueElement) {
+    this.validationMode = typeValueElement.getAttribute('validationMode');
+  }
+}
+TeamcityTextProperty.prototype = Object.create(TeamcityProperty.prototype);
+TeamcityTextProperty.prototype.constructor = TeamcityTextProperty;
+TeamcityTextProperty.prototype.createInput = function(cell) {
+  this.input = document.createElement('input');
+  this.input.type = 'text';
+  this.input.value = this.value;
+  cell.appendChild(this.input);
+};
+TeamcityTextProperty.prototype.currentValue = function() {
+  return this.input.value;
+};
+
+function TeamcitySelectProperty(propertyElement, typeValueElement) {
+  TeamcityProperty.call(this, propertyElement, typeValueElement);
+  console.assert(typeValueElement);
+  if (typeValueElement) {
+    this.data = [];
+    for (var i = 0; i < typeValueElement.attributes.length; i++) {
+      var attrib = typeValueElement.attributes[i];
+      if (attrib.name.indexOf('data_') === 0) {
+        var index = parseInt(attrib.name.substr('data_'.length), 10);
+        this.data[index - 1] = attrib.value;
+      }
+    }
+  }
+}
+TeamcitySelectProperty.prototype = Object.create(TeamcityProperty.prototype);
+TeamcitySelectProperty.prototype.constructor = TeamcitySelectProperty;
+TeamcitySelectProperty.prototype.createInput = function(cell) {
+  this.select = document.createElement('select');
+  this.select.value = this.value;
+  for (var i = 0; i < this.data.length; i++) {
+    var dataItem = this.data[i];
+    var option = document.createElement('option');
+    option.value = dataItem;
+    option.text = dataItem;
+    if (this.value == dataItem) {
+      option.selected = 'selected';
+    }
+    this.select.appendChild(option);
+  }
+  cell.appendChild(this.select);
+};
+TeamcitySelectProperty.prototype.currentValue = function() {
+  return this.select.options[this.select.selectedIndex].value;
+};
+
+function TeamcityCheckboxProperty(propertyElement, typeValueElement) {
+  TeamcityProperty.call(this, propertyElement, typeValueElement);
+  this.checkedValue = typeValueElement.getAttribute('checkedValue');
+  this.uncheckedValue = typeValueElement.getAttribute('uncheckedValue');
+}
+TeamcityCheckboxProperty.prototype = Object.create(TeamcityProperty.prototype);
+TeamcityCheckboxProperty.prototype.constructor = TeamcityCheckboxProperty;
+TeamcityCheckboxProperty.prototype.createInput = function(cell) {
+  this.input = document.createElement('input');
+  this.input.type = 'checkbox';
+  cell.appendChild(this.input);
+};
+TeamcityCheckboxProperty.prototype.currentValue = function() {
+  var v = this.input.checked ? this.checkedValue : this.uncheckedValue;
+  return v || '';
+};
+
+function TeamcityPasswordProperty(propertyElement, typeValueElement) {
+  TeamcityProperty.call(this, propertyElement, typeValueElement);
+  if (typeValueElement) {
+    this.validationMode = typeValueElement.getAttribute('validationMode');
+  }
+}
+TeamcityPasswordProperty.prototype = Object.create(TeamcityProperty.prototype);
+TeamcityPasswordProperty.prototype.constructor = TeamcityPasswordProperty;
+TeamcityPasswordProperty.prototype.createInput = function(cell) {
+  this.input = document.createElement('input');
+  this.input.type = 'password';
+  this.input.value = this.value;
+  cell.appendChild(this.input);
+};
+TeamcityPasswordProperty.prototype.currentValue = function() {
+  return this.input.value;
+};
+
+function TeamcityProperties() {
+  this.shown = false;
+  this.properties = null;
+}
+
+TeamcityProperties.prototype = {
+  showProgress: function() {
+    document.getElementById('expand-params-progress').style.display = 'block';
+  },
+  hideProgress: function() {
+    document.getElementById('expand-params-progress').style.display = 'none';
+  },
+  setPropertiesDisplay: function(displayValue) {
+    var rows = document.getElementsByClassName('teamcity-property-row');
+    for (var i = 0, l = rows.length; i < l; i++) {
+      rows[i].style.display = displayValue;
+    }
+  },
+  showProperties: function() {
+    this.setPropertiesDisplay('');
+    this.shown = true;
+  },
+  hideProperties: function() {
+    this.setPropertiesDisplay('none');
+    this.shown = false;
+  },
+  fetchProperties: function(fetchBuildTypeDetails, callback) {
+    var that = this;
+    fetchBuildTypeDetails(function(rootElement) {
+      var parameters = rootElement.getElementsByTagName('parameters')[0];
+      that.properties = Array.prototype.slice.call(parameters.children);
+      that.properties = that.properties.map(TeamcityPropertyFactory).filter(
+          function(property) {
+            return property.display != 'hidden';
+          });
+      console.log(that.properties);
+      var expandParamsRow = document.getElementById('expand-params-row');
+      var table = document.getElementById('parameters');
+      var rowIndex = expandParamsRow.rowIndex;
+      that.properties.map(function(property) {
+        rowIndex += 1;
+        var row = table.insertRow(rowIndex);
+        row.className = 'teamcity-property-row';
+        property.populateRow(row);
+      });
+      callback();
+    });
+  },
+  expand: function(disableCallback, enableCallback, fetchBuildTypeDetails) {
+    if (this.properties === null) {
+      disableCallback();
+      this.showProgress();
+      var that = this;
+      this.fetchProperties(fetchBuildTypeDetails, function() {
+        this.shown = true;
+        that.hideProgress();
+        enableCallback();
+      });
+    } else if (this.shown) {
+      this.hideProperties();
+    } else {
+      this.showProperties();
+    }
+  },
+  collapse: function() {
+    this.hideProperties();
+  },
+  toggle: function(disableCallback, enableCallback, fetchBuildTypeDetails) {
+    if (!this.shown) {
+      this.expand(disableCallback, enableCallback, fetchBuildTypeDetails);
+    } else {
+      this.collapse();
+    }
+  },
+  valuesElement: function() {
+    if (this.properties === null) {
+      return '';
+    }
+    var result = '<properties>';
+    for (var i = 0, len = this.properties.length; i < len; i++) {
+      result += '<property ';
+      var property = this.properties[i];
+      result += 'name="' + property.name + '" ';
+      result += 'value="' + property.currentValue() + '" ';
+      result += '/>';
+    }
+    result += '</properties>';
+    return result;
+  }
+};
+
 (function() {
   'use strict';
 
@@ -65,6 +294,7 @@ BranchesStorage.prototype = {
   var teamcityOrigin;
   var agents = new AgentsStorage();
   var branches = new BranchesStorage();
+  var properties = new TeamcityProperties();
 
   function getJsonFromQuery(query) {
     var result = {};
@@ -128,6 +358,7 @@ BranchesStorage.prototype = {
       if (comment.length === 0) {
         return '';
       }
+      // TODO: htmlencode comment
       return '<comment><text>' + comment + '</text></comment>';
     }
 
@@ -158,6 +389,7 @@ BranchesStorage.prototype = {
         commentElement() +
         triggeringOptionsElement() +
         agentElement() +
+        properties.valuesElement() +
         buildCloseTag();
   }
 
@@ -227,6 +459,21 @@ BranchesStorage.prototype = {
     event.preventDefault();
   }
 
+  function fetchBuildTypeDetails(callback) {
+    var request = new XMLHttpRequest();
+    request.addEventListener('load', function() {
+      if (request.status == 200) {
+        callback(request.responseXML.documentElement);
+      } else {
+        console.log(request);
+        // TODO: inform user of something went wrong.
+      }
+    });
+    var url = teamcityOrigin + '/httpAuth/app/rest/buildTypes/id:' + buildType;
+    request.open('GET', url, true);
+    request.send();
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     chrome.tabs.query({
       active: true,
@@ -255,5 +502,9 @@ BranchesStorage.prototype = {
     new AutoSuggestControl(branchElem, branches);
     document.getElementById('runBuildForm').addEventListener(
         'submit', onSubmit);
+    var expandParamsElem = document.getElementById('expand-params');
+    expandParamsElem.addEventListener('click', function() {
+      properties.toggle(disableTheForm, enableTheForm, fetchBuildTypeDetails);
+    });
   });
 }());

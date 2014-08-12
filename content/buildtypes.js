@@ -11,6 +11,5 @@
   buildTypes = buildTypes.filter(function(bt){
     return bt !== null;
   });
-  console.log(buildTypes);
   return buildTypes;
 }());

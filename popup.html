@@ -1,63 +1,9 @@
 <!doctype html>
 <html>
   <head>
-    <style>
-      body {
-        min-width: 320px;
-        font: 82%/1.5em "Helvetica Neue", Arial, sans-serif;
-        color: #151515;
-        text-rendering: optimizeLegibility;
-        padding: 0;
-        margin: 0;
-      }
-      h1 {
-        height: 18px;
-        margin: 0;
-        font: 200 16px "Helvetica Neue", Calibri, Arial, sans-serif;
-        background-color: #F6F6F6;
-        padding: 12px;
-        border-bottom: 1px solid #EEE;
-      }
-      .contents {
-        padding: 10px;
-      }
-      td.label {
-        white-space: nowrap;
-        width: 8em;
-      }
-      .buttons {
-        height: 32px;
-        padding-top: 10px;
-        border-top: 1px dotted #CCC;
-      }
-      .parameters {
-        padding-bottom: 10px;
-      }
-      .parameters input[type="text"] {
-        width: 200px;
-      }
-      .error {
-        margin-top: 0;
-        display: none;
-        color: #ed2c10;
-        width: 100%;
-      }
-      .expand {
-        border-bottom: 1px dotted #000;
-        text-decoration: none;
-        cursor: pointer;
-      }
-
-    </style>
-    <link href="teamcity.css" rel="stylesheet" type="text/css" />
-    <link href="autosuggest.css" rel="stylesheet" type="text/css" />
-
-    <!--
-      - JavaScript and HTML must be in separate files: see our Content Security
-      - Policy documentation[1] for details and explanation.
-      -
-      - [1]: http://developer.chrome.com/extensions/contentSecurityPolicy.html
-     -->
+    <link href="css/popup.css" rel="stylesheet" type="text/css" />
+    <link href="css/teamcity.css" rel="stylesheet" type="text/css" />
+    <link href="css/suggest.css" rel="stylesheet" type="text/css" />
     <script data-main="popup/main.js" src="lib/require.js"></script>
   </head>
   <body>
@@ -84,9 +30,10 @@
         </tr>
         <tr id='expand-params-row'>
           <td class='label'>
-            <span href='#' class='expand' id='expand-params'>
-              Parameters:
-            </span></td>
+            <a href='#' class='expand' id='expand-params'>
+              Parameters
+            </a>
+          </td>
           <td>
             <i id="expand-params-progress" style="display: none;"
                class="icon-refresh icon-spin progressRing progressRingDefault"

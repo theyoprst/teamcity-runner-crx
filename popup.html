@@ -8,22 +8,22 @@
   </head>
   <body>
     <h1>Run, Custom Build, Run</h1>
-    <form id='runBuildForm' action='#' class='contents'>
+    <form id='run-build-form' action='#' class='contents'>
       <table class='parameters' id='parameters'>
         <tr>
           <td class='label'>Branch:</td>
-          <td class='input'><input type='text' value='' name='build_branch'
-                 placeholder='<default branch>' id='build_branch'/></td>
+          <td class='input'><input type='text' value='' name='build-branch'
+                 placeholder='<default branch>' id='build-branch'/></td>
         </tr>
         <tr>
           <td class='label'>Comment:</td>
-          <td class='input'><input type='text' value='' name='build_comment'/></td>
+          <td class='input'><input type='text' value='' name='build-comment'/></td>
         </tr>
         <tr>
           <td class='label'>Agent:</td>
           <td class='input'>
-            <input type='text' value='' name='build_agent' id='build_agent'/>
-            <div class='error' id='invalidAgent'>
+            <input type='text' value='' name='build-agent' id='build-agent'/>
+            <div class='error' id='invalid-agent'>
               Invalid agent name
             </div>
           </td>
@@ -36,36 +36,36 @@
           </td>
           <td>
             <i id="expand-params-progress" style="display: none;"
-               class="icon-refresh icon-spin progressRing progressRingDefault"
+               class="progress-spin"
                title="Please wait..."></i>
           </td>
         </tr>
         <tr>
           <td></td>
           <td class='checkbox'>
-            <input type='checkbox' name='build_is_personal' id='build_is_personal'/>
-            <label for='build_is_personal'>personal</label>
+            <input type='checkbox' name='build-is-personal' id='build-is-personal'/>
+            <label for='build-is-personal'>personal</label>
           </td>
         </tr>
         <tr>
           <td></td>
           <td class='checkbox'>
-            <input type='checkbox' name='build_move_to_top' id='build_move_to_top'/>
-            <label for='build_move_to_top'>move to top</label>
+            <input type='checkbox' name='build-move-to-top' id='build-move-to-top'/>
+            <label for='build-move-to-top'>move to top</label>
           </td>
         </tr>
         <tr>
           <td></td>
           <td class='checkbox'>
-            <input type='checkbox' name='build_clean_all' id='build_clean_all'/>
-            <label for='build_clean_all'>clean all files</label>
+            <input type='checkbox' name='build-clean-all' id='build-clean-all'/>
+            <label for='build-clean-all'>clean all files</label>
           </td>
         </tr>
       </table>
       <div class='buttons'>
         <input type='submit' value='Run Build' class='btn btn_primary' />
-        <i id="runBuildProgress" style="display: none;"
-           class="icon-refresh icon-spin progressRing progressRingDefault icon-2x"
+        <i id="run-build-progress" style="display: none;"
+           class="progress-spin icon-2x"
            title="Please wait..."></i>
       </div>
     </form>

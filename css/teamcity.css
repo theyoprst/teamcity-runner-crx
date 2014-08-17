@@ -1,30 +1,35 @@
-[class^="icon-"],[class*=" icon-"]{
-  /*font-family:Arial;*/
+@-webkit-keyframes spin {
+  0% {
+    -webkit-transform:rotate(0deg);
+    -moz-transform:rotate(0deg);
+  }
+  100% {
+    -webkit-transform:rotate(359deg);
+    -moz-transform:rotate(359deg);
+  }
+}
+
+.progress-spin {
+  -webkit-animation: spin 1s infinite linear;
+  -moz-animation: spin 1s infinite linear;
+  -webkit-animation-duration: 0.9s;
+  -moz-animation-duration: 0.9s;
   font-weight:normal;
   font-style:normal;
   text-decoration:inherit;
+  width: auto;
+  height: auto;
+  color: #24B275;
+  float: right;
+  position: relative;
+}
+
+.progress-spin:before {
+  content: "\21bb";
 }
 
 .icon-2x {
   font-size:2em;
-}
-
-.icon-spin {
-  display: inline-block;
-  -webkit-animation: spin 1s infinite linear;
-}
-
-@-webkit-keyframes spin {
-  0% {
-    -webkit-transform:rotate(0deg);
-  }
-  100% {
-    -webkit-transform:rotate(359deg);
-  }
-}
-
-.icon-refresh:before {
-  content: "\21bb";
 }
 
 input, select, button {
@@ -41,20 +46,16 @@ a:hover {
   color: #1564c2;
 }
 
-/* Normalize styling of form elements */
 form {
   margin: 0;
   padding: 0;
 }
 
-input[type='text'], input[type='password'], input[type='search'], select[multiple] {
-  min-height: 20px !important;
+input[type='text'], input[type='password'], select[multiple] {
   line-height: 1.5em;
   padding-left: 2px;
-
   border: 1px solid;
   border-color: #888 #CCC #CCC;
-
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
   font-size: 13px;
 }
@@ -71,49 +72,44 @@ input[disabled] {
   border-color: #CCC #DDD #DDD;
 }
 
-/* Custom buttons */
 .btn {
   display: inline-block;
   padding: 5px 14px 6px;
   outline: 0;
   cursor: pointer;
-
   background-color: #e6e6e6;
   background-repeat: no-repeat;
   background-image: -webkit-linear-gradient(#ffffff, #ffffff 25%, #e6e6e6);
-  background-image: linear-gradient(#ffffff, #ffffff 25%, #e6e6e6);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#e6e6e6', GradientType=0);
-
   color: #333;
   font-size: 13px;
   line-height: normal;
   text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
-
   border: 1px solid #ccc;
   border-bottom-color: #bbb;
   border-radius: 4px;
-
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
 }
+
 .btn:hover {
   background-position: 0 -15px;
   filter: none;
-
   color: #333;
   text-decoration: none;
-
   -webkit-transition: background-position 0.1s linear;
   transition: background-position 0.1s linear;
 }
+
 .btn:focus {
   outline: thin dotted;
   outline: 5px auto -webkit-focus-ring-color;
   outline-offset: -2px;
 }
+
 .btn:active {
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.25), 0 1px 2px rgba(0, 0, 0, 0.05);
   outline: 0;
 }
+
 .btn[disabled],
 .btn[disabled]:hover,
 .btn[disabled]:active {
@@ -121,42 +117,22 @@ input[disabled] {
   background-image: none;
   background-position: 0 0;
   filter: inherit;
-
   color: #666;
-
   box-shadow: inherit;
 }
 
 .btn_primary {
   color: #FFF;
-
   background-color: #2d5fb3;
   background-repeat: repeat-x;
   background-image: -webkit-linear-gradient(top, #438ed7, #2d5fb3);
   background-image: linear-gradient(to bottom, #438ed7, #2d5fb3);
   filter: none;
-
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
-
   border-color: #2d5fb3 #2d5fb3 #003f81;
   border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
 }
+
 .btn_primary:hover {
   color: #FFF;
-}
-
-.icon-refresh {
-  color: #24B275;
-}
-
-.icon-refresh.icon-spin {
-  width: auto;
-  height: auto;
-  -webkit-animation-duration: 0.9s;
-}
-
-.progressRingDefault {
-  float: right;
-  position: relative;
-  /*top: 1px;*/
 }

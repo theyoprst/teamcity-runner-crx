@@ -9,31 +9,32 @@ require(['../lib/domReady', 'suggest', 'agents', 'branches',
         function(domReady, Suggest, agents, branches, properties, trigger) {
   'strict';
   var disableTheForm = function() {
-    var form = document.getElementById('runBuildForm');
+    var form = document.getElementById('run-build-form');
     for (var i = 0, len = form.elements.length; i < len; ++i) {
       form.elements[i].disabled = true;
     }
   };
   var enableTheForm = function() {
-    var form = document.getElementById('runBuildForm');
+    var form = document.getElementById('run-build-form');
     for (var i = 0, len = form.elements.length; i < len; ++i) {
       form.elements[i].disabled = false;
     }
   };
   var showInProgress = function() {
-    document.getElementById('runBuildProgress').style.display = 'block';
+    document.getElementById('run-build-progress').style.display = 'block';
   };
   var hideInProgress = function() {
-    document.getElementById('runBuildProgress').style.display = 'none';
+    document.getElementById('run-build-progress').style.display = 'none';
   };
   var showInvalidAgentError = function() {
-    document.getElementById('invalidAgent').style.display = 'block';
+    document.getElementById('invalid-agent').style.display = 'block';
   };
   var hideInvalidAgentError = function() {
-    document.getElementById('invalidAgent').style.display = 'none';
+    document.getElementById('invalid-agent').style.display = 'none';
   };
   var findAgentId = function(callback) {
-    var agent = document.getElementById('runBuildForm').elements.build_agent;
+    var agent = document.getElementById('run-build-form')
+        .elements['build-agent'];
     agents.getAgentIdByName(agent.value, function(isInvalid, agentId) {
       if (isInvalid) {
         showInvalidAgentError();
@@ -52,16 +53,16 @@ require(['../lib/domReady', 'suggest', 'agents', 'branches',
     event.preventDefault();
   };
   domReady(function() {
-    var agentElem = document.getElementById('build_agent');
+    var agentElem = document.getElementById('build-agent');
     new Suggest(agentElem, agents);
     agentElem.addEventListener('change', function() {
-      document.getElementById('invalidAgent').style.display = 'none';
+      document.getElementById('invalid-agent').style.display = 'none';
     }, false);
 
-    var branchElem = document.getElementById('build_branch');
+    var branchElem = document.getElementById('build-branch');
     new Suggest(branchElem, branches);
 
-    document.getElementById('runBuildForm').addEventListener(
+    document.getElementById('run-build-form').addEventListener(
         'submit', onSubmit);
 
     var expandParamsElem = document.getElementById('expand-params');

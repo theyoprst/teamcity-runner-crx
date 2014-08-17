@@ -1,14 +1,14 @@
 define(['tabinfo', 'properties/properties'], function(tabinfo, properties) {
   var prepareBuildXml_ = function(agentId, buildTypeId) {
-    var elements = document.getElementById('runBuildForm').elements;
+    var elements = document.getElementById('run-build-form').elements;
 
     function buildOpenTag() {
       var result = '<build';
-      var branch = elements.build_branch.value.trim();
+      var branch = elements['build-branch'].value.trim();
       if (branch.length > 0) {
         result += ' branchName="' + branch + '"';
       }
-      if (elements.build_is_personal.checked) {
+      if (elements['build-is-personal'].checked) {
         result += ' personal="true"';
       }
       result += '>';
@@ -20,7 +20,7 @@ define(['tabinfo', 'properties/properties'], function(tabinfo, properties) {
     }
 
     function commentElement() {
-      var comment = elements.build_comment.value.trim();
+      var comment = elements['build-comment'].value.trim();
       if (comment.length === 0) {
         return '';
       }
@@ -29,8 +29,8 @@ define(['tabinfo', 'properties/properties'], function(tabinfo, properties) {
     }
 
     function triggeringOptionsElement() {
-      var moveToTop = elements.build_move_to_top.checked;
-      var cleanAll = elements.build_clean_all.checked;
+      var moveToTop = elements['build-move-to-top'].checked;
+      var cleanAll = elements['build-clean-all'].checked;
       var result = '<triggeringOptions';
       if (cleanAll) {
         result += ' cleanSources="true"';
@@ -70,7 +70,7 @@ define(['tabinfo', 'properties/properties'], function(tabinfo, properties) {
               var rootElement = request.responseXML.documentElement;
               var webUrl = rootElement.getAttribute('webUrl');
               chrome.tabs.create({ url: webUrl });
-              var branchName = document.getElementById('build_branch').value;
+              var branchName = document.getElementById('build-branch').value;
               if (branchName) {
                 branches.addBranch(branchName);
               }

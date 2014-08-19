@@ -1,5 +1,5 @@
 body {
-  min-width: 320px;
+  width: 550px;
   font: 82%/1.5em "Helvetica Neue", Arial, sans-serif;
   color: #151515;
   text-rendering: optimizeLegibility;
@@ -28,9 +28,12 @@ h1 {
 }
 .parameters {
   padding-bottom: 10px;
+  width: 100%;
+  border-spacing: 5px 1px;
 }
-.parameters input[type="text"] {
-  width: 200px;
+.parameters input[type="text"],
+.parameters select {
+  width: 100%;
 }
 .error {
   margin-top: 0;
@@ -42,4 +45,15 @@ h1 {
   border-bottom: 1px dotted #000;
   text-decoration: none;
   cursor: pointer;
+}
+.property-description {
+  color: #888;
+  font-size: 90%;
+}
+.property-name {
+  vertical-align: top;
+  padding-left: 10px;
+}
+.teamcity-property-row td {
+  border-bottom: 1px dotted #CCC;
 }

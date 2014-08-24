@@ -14,7 +14,11 @@ define(function() {
       var cell0 = row.insertCell(0);
       cell0.className = 'property-name';
       var cell1 = row.insertCell(1);
-      cell0.innerHTML = this.label || this.name;
+      var name = this.label || this.name;
+      if (this.display == 'prompt') {
+        name += '<span class="mandatory-asterix">*</span>';
+      }
+      cell0.innerHTML = name;
       this.createInput(cell1);
       if (this.description) {
         var desc = document.createElement('div');

@@ -57,3 +57,7 @@ h1 {
 .teamcity-property-row td {
   border-bottom: 1px dotted #CCC;
 }
+.mandatory-asterix {
+  color: #ED2C10;
+  font-size: 90%;
+}

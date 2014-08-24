@@ -13,12 +13,14 @@ require(['../lib/domReady', 'suggest', 'agents', 'branches',
     for (var i = 0, len = form.elements.length; i < len; ++i) {
       form.elements[i].disabled = true;
     }
+    document.getElementById('expand-params').removeAttribute('href');
   };
   var enableTheForm = function() {
     var form = document.getElementById('run-build-form');
     for (var i = 0, len = form.elements.length; i < len; ++i) {
       form.elements[i].disabled = false;
     }
+    document.getElementById('expand-params').href = '#';
   };
   var showInProgress = function() {
     document.getElementById('run-build-progress').style.display = 'block';

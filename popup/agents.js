@@ -24,12 +24,13 @@ define(['tabinfo'], function(tabinfo) {
       localStorage.setItem('agents', JSON.stringify(this.agents_));
     },
     getAgentIdByName: function(agentName, callback) {
+      var thisRef = this;
       tabinfo.teamcityOrigin(function(teamcityOrigin) {
         if (!agentName) {
           callback(false, null);
           return;
         }
-        var agentId = this.agents_[agentName];
+        var agentId = thisRef.agents_[agentName];
         if (agentId) {
           callback(false, agentId);
           return;
@@ -39,7 +40,7 @@ define(['tabinfo'], function(tabinfo) {
           if (request.status == 200) {
             var rootElement = request.responseXML.documentElement;
             var agentId = rootElement.getAttribute('id');
-            this.addAgent(agentName, agentId);
+            thisRef.addAgent(agentName, agentId);
             callback(false, agentId);
           } else if (request.status == 404) {
             callback(true, none);
